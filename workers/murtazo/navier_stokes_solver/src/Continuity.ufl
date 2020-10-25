@@ -1,0 +1,16 @@
+
+# Define function spaces (P1-P1)
+V = VectorElement("Lagrange", triangle, 1)
+Q = FiniteElement("Lagrange", triangle, 1)
+
+# Define trial and test functions
+p = TrialFunction(Q)
+q = TestFunction(Q)
+
+# Define coefficients
+k = Constant(triangle)
+u = Coefficient(V)
+
+# Define bilinear and linear forms
+a = inner(nabla_grad(p), nabla_grad(q))*dx
+L = -(1/k)*nabla_div(u)*q*dx

@@ -1,0 +1,42 @@
+# Require CMake 3.5
+cmake_minimum_required(VERSION 3.5)
+
+set(PROJECT_NAME airfoil)
+project(${PROJECT_NAME})
+
+# Set CMake behavior
+cmake_policy(SET CMP0004 NEW)
+
+# Get DOLFIN configuration data (DOLFINConfig.cmake must be in
+# DOLFIN_CMAKE_CONFIG_PATH)
+find_package(DOLFIN REQUIRED)
+
+include(${DOLFIN_USE_FILE})
+
+# Default build type (can be overridden by user)
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING
+      "Choose the type of build, options are: Debug MinSizeRel Release RelWithDebInfo." FORCE)
+endif()
+
+# Do not throw error for 'multi-line comments' (these are typical in
+# rst which includes LaTeX)
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-Wno-comment" HAVE_NO_MULTLINE)
+if (HAVE_NO_MULTLINE)
+  set(CMAKE_CXX_FLAGS "-Wno-comment ${CMAKE_CXX_FLAGS}")
+endif()
+
+# Executable
+#add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} 
+  main.cpp 
+  src/Momentum.cpp 
+  src/Continuity.cpp 
+  src/EntropyResidual.cpp
+  src/EntropyViscosity.cpp
+  src/Functionals.cpp)
+
+# Target libraries
+target_link_libraries(${PROJECT_NAME} dolfin)
+#target_link_libraries(${PROJECT_NAME} ${DOLFIN_LIBRARIES})

@@ -1,0 +1,29 @@
+# Define function spaces (P1-P1)
+V = VectorElement("Lagrange", triangle, 1)
+Q = FiniteElement("Lagrange", triangle, 1)
+W = FiniteElement("Discontinuous Lagrange", triangle, 0)
+
+# Define trial and test functions
+u = TrialFunction(V)
+v = TestFunction(V)
+
+# Define coefficients
+k  = Constant(triangle)
+u0 = Coefficient(V)
+p  = Coefficient(Q)
+f  = Coefficient(V)
+nu = Constant(triangle)
+mu = Coefficient(W)
+
+n  = FacetNormal(triangle)
+
+def epsilon(u):
+    return 0.5*(nabla_grad(u) + nabla_grad(u).T)
+
+# Define bilinear and linear forms
+a = 1/k * inner(u,  v) * dx + 0.5 * inner( dot(u0, nabla_grad(u)) , v) * dx  \
+    + 0.5 * (nu + mu) * inner(epsilon(u), epsilon(v)) * dx
+
+L = 1/k * inner(u0, v) * dx - 0.5 * inner( dot(u0, nabla_grad(u0)), v) * dx  \
+    - inner(grad(p), v) * dx + inner(f, v) * dx \
+    - 0.5 * (nu + mu) * inner(epsilon(u0), epsilon(v)) * dx 

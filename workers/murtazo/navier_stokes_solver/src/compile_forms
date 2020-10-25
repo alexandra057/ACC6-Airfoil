@@ -1,0 +1,4 @@
+#!/bin/sh
+for f in *.ufl; do 
+    ffc -O -f split -f no_ferari -f simplify_expressions -f eliminate_zeros -l dolfin $f;
+done

@@ -1,0 +1,56 @@
+version: '3.1'
+
+services:
+  worker:
+    image: worker
+    depends_on:
+      - rabbit
+    networks:
+      - broker
+  rabbit:
+    container_name: rabbit
+    hostname: rabbit
+    image: rabbitmq:latest
+    environment:
+        - RABBITMQ_DEFAULT_USER=u
+        - RABBITMQ_DEFAULT_PASS=p
+    ports:
+        - "5672:5672"
+    networks:
+      - broker
+  app:
+    image: app
+    container_name: app
+    ports:
+      - 5000:5000
+    networks:
+      - database
+      - broker
+    depends_on:
+      - db
+  db:
+    image: mariadb
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_USER: root
+      MYSQL_DATABASE: results
+    ports:
+      - 3306:3306
+    volumes:
+      - ./miniproject_db:/var/lib/mysql
+    networks:
+      - database
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - database
+
+networks:
+  database:
+  broker:

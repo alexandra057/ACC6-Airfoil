@@ -1,0 +1,22 @@
+This program solves incompressible flow past wing profile.
+
+To compile the program do the following:
+1. cd src; ./compile_forms; cd ../
+2. cmake .
+3. make -j 2
+
+You will create an excutable function "airfoil".
+
+To run the code do
+./airfoil num_samples visc speed T mesh.xml
+
+For example if you want to save 10 samples, run with the viscosity
+of nu=0.0001 and speed of v=10.0, total time is T=1, and
+the mesh is in "cloudnaca/msh/r1a18n200.xml" do
+
+./airfoil  10 0.0001 10. 1 cloudnaca/msh/r1a18n200.xml
+
+The output is inside results folder. It contains two
+set of vtk files for velocity and pressure, and one
+data file with drag and lift forces stored
+in every time-step

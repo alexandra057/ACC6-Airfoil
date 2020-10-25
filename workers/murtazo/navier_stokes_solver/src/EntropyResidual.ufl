@@ -1,0 +1,16 @@
+# Define function spaces (P1-P1)
+V = VectorElement("Lagrange", triangle, 1)
+Q = FiniteElement("Lagrange", triangle, 1)
+W = FiniteElement("Discontinuous Lagrange", triangle, 0)
+
+# Define trial and test functions
+v = TestFunction(W)
+
+# Define coefficients
+u  = Coefficient(V)
+u0 = Coefficient(V)
+p  = Coefficient(Q)
+k  = Constant(triangle)
+cv = CellVolume(triangle)
+
+L = 1/cv * ( 1/k * 0.5 * (inner(u,u) - inner(u0,u0)) + div( (0.5 * inner(u,u) + p) * u ) ) * v * dx

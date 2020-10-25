@@ -1,0 +1,275 @@
+
+Configuration steps for Airfoil Application
+
+
+1 - Install Docker on ubuntu 16.04 
+
+———
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update
+apt-cache policy docker-ce
+sudo apt-get install -y docker-ce
+———
+
+2 - Deploy FEniCS container
+
+———
+root@airfoil:~# docker run -td -v $(pwd):/home/fenics/shared -w /home/fenics/shared quay.io/fenicsproject/stable:current
+dd785034c0963d116d73bc6b618c8c8db88016ddcca6255cf3f877e772083df4
+root@airfoil:~# docker ps
+CONTAINER ID        IMAGE                                  COMMAND                  CREATED             STATUS              PORTS               NAMES
+dd785034c096        quay.io/fenicsproject/stable:current   "/sbin/my_init --q..."   4 seconds ago       Up 3 seconds                            focused_ardinghelli
+———
+
+ - Login the container 
+
+———
+root@airfoil:~# docker exec -t -i dd785034c096 /bin/bash
+root@dd785034c096:/home/fenics/shared# 
+———
+
+ - Logout from container 
+
+———
+root@dd785034c096:/home/fenics/shared# exit
+root@airfoil:~# docker ps 
+CONTAINER ID        IMAGE                                  COMMAND                  CREATED             STATUS              PORTS               NAMES
+dd785034c096        quay.io/fenicsproject/stable:current   "/sbin/my_init --q..."   4 minutes ago       Up 4 minutes                            focused_ardinghelli
+———
+
+3 - Download application on your VM. (murtazo.tgz is available in studentportal)
+
+———
+<from your local machine> scp -i /Users/salmantoor/.ssh/mist-sztoor murtazo.tgz ubuntu@89.45.233.15:/home/ubuntu/.
+root@airfoil:~# ls
+murtazo.tgz
+———
+
+4 - Copy “murtazo.tgz” inside the container
+
+———
+root@airfoil:~# docker cp  murtazo.tgz dd785034c096:/home/fenics/shared/.
+———
+
+5 - Again login the container 
+
+———
+root@airfoil:~# docker exec -t -i dd785034c096 /bin/bash
+———
+
+6 - Extract the files
+
+———
+root@dd785034c096:/home/fenics/shared# tar xzvf murtazo.tgz 
+./._murtazo
+murtazo/
+murtazo/._.DS_Store
+murtazo/.DS_Store
+murtazo/._cloudnaca.tgz
+murtazo/cloudnaca.tgz
+murtazo/._navier_stokes_solver.tar
+murtazo/navier_stokes_solver.tar
+
+root@dd785034c096:/home/fenics/shared# ls
+murtazo  murtazo.tgz
+
+root@dd785034c096:/home/fenics/shared# ls
+murtazo  murtazo.tgz
+
+root@dd785034c096:/home/fenics/shared# cd murtazo/
+
+root@dd785034c096:/home/fenics/shared/murtazo# ls
+cloudnaca.tgz  navier_stokes_solver.tar
+
+root@dd785034c096:/home/fenics/shared/murtazo# tar xvf cloudnaca.tgz 
+cloudnaca/
+cloudnaca/geo/
+cloudnaca/msh/
+cloudnaca/naca2gmsh_geo.py
+cloudnaca/readme.txt
+cloudnaca/runme.sh
+
+root@dd785034c096:/home/fenics/shared/murtazo# tar xvf navier_stokes_solver.tar 
+navier_stokes_solver/
+navier_stokes_solver/main.cpp
+navier_stokes_solver/src/
+navier_stokes_solver/src/Continuity.cpp
+navier_stokes_solver/src/EntropyViscosity.cpp
+navier_stokes_solver/src/Continuity.h
+navier_stokes_solver/src/EntropyResidual.h
+navier_stokes_solver/src/EntropyViscosity.cpp~
+navier_stokes_solver/src/compile_forms
+navier_stokes_solver/src/EntropyResidual.ufl
+navier_stokes_solver/src/Momentum.h
+navier_stokes_solver/src/Momentum.ufl
+navier_stokes_solver/src/Momentum.cpp
+navier_stokes_solver/src/EntropyViscosity.h
+navier_stokes_solver/src/Functionals.h
+navier_stokes_solver/src/Continuity.ufl
+navier_stokes_solver/src/EntropyResidual.cpp
+navier_stokes_solver/src/Functionals.cpp
+navier_stokes_solver/src/Functionals.ufl
+navier_stokes_solver/README
+navier_stokes_solver/CMakeLists.txt
+navier_stokes_solver/Makefile
+———
+
+7 - Install the navier_stokes_solver
+
+ - Read the README file
+
+8  - Perform following steps 
+
+———
+root@dd785034c096:/home/fenics/shared/murtazo/navier_stokes_solver# cd src/
+
+root@dd785034c096:/home/fenics/shared/murtazo/navier_stokes_solver/src# ./compile_forms 
+  Ignoring precision in integral metadata compiled using quadrature representation. Not implemented.
+  Ignoring precision in integral metadata compiled using quadrature representation. Not implemented.
+  Ignoring precision in integral metadata compiled using quadrature representation. Not implemented.
+  Ignoring precision in integral metadata compiled using quadrature representation. Not implemented.
+  Ignoring precision in integral metadata compiled using quadrature representation. Not implemented.
+  Ignoring precision in integral metadata compiled using quadrature representation. Not implemented.
+  Ignoring precision in integral metadata compiled using quadrature representation. Not implemented.
+
+root@dd785034c096:/home/fenics/shared/murtazo/navier_stokes_solver/src# cd ..
+
+root@dd785034c096:/home/fenics/shared/murtazo/navier_stokes_solver# cmake .
+-- The C compiler identification is GNU 5.4.0
+-- The CXX compiler identification is GNU 5.4.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found PythonInterp: /usr/bin/python3 (found version "3.5.2") 
+-- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.1") 
+-- Checking for one of the modules 'craypetsc_real;PETSc'
+-- Looking for sys/types.h
+-- Looking for sys/types.h - found
+-- Looking for stdint.h
+-- Looking for stdint.h - found
+-- Looking for stddef.h
+-- Looking for stddef.h - found
+-- Check size of PetscInt
+-- Check size of PetscInt - failed
+-- Checking for one of the modules 'crayslepc_real;SLEPc'
+-- Performing Test HAVE_NO_MULTLINE
+-- Performing Test HAVE_NO_MULTLINE - Success
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/fenics/shared/murtazo/navier_stokes_solver
+
+root@dd785034c096:/home/fenics/shared/murtazo/navier_stokes_solver# 
+
+root@dd785034c096:/home/fenics/shared/murtazo/navier_stokes_solver# 
+
+root@dd785034c096:/home/fenics/shared/murtazo/navier_stokes_solver#  make -j 2
+Scanning dependencies of target airfoil
+[ 14%] Building CXX object CMakeFiles/airfoil.dir/src/Momentum.cpp.o
+[ 28%] Building CXX object CMakeFiles/airfoil.dir/main.cpp.o
+[ 42%] Building CXX object CMakeFiles/airfoil.dir/src/Continuity.cpp.o
+[ 57%] Building CXX object CMakeFiles/airfoil.dir/src/EntropyResidual.cpp.o
+[ 71%] Building CXX object CMakeFiles/airfoil.dir/src/EntropyViscosity.cpp.o
+[ 85%] Building CXX object CMakeFiles/airfoil.dir/src/Functionals.cpp.o
+[100%] Linking CXX executable airfoil
+[100%] Built target airfoil
+
+root@dd785034c096:/home/fenics/shared/murtazo/navier_stokes_solver# ls
+CMakeCache.txt  CMakeFiles  CMakeLists.txt  Makefile  README  airfoil  cmake_install.cmake  main.cpp  src
+
+- Now we have “airfoil” executable available.
+
+9 - Lets fix the gmsh 
+
+———
+root@dd785034c096:/home/fenics/shared/murtazo# cd cloudnaca
+
+root@dd785034c096:/home/fenics/shared/murtazo/cloudnaca# ls
+geo  msh  naca2gmsh_geo.py  readme.txt  runme.sh
+ 
+ - Read the README file 
+ - Install gmsh package
+
+———
+root@dd785034c096:/home/fenics/shared/murtazo/cloudnaca# apt-get update
+
+root@dd785034c096:/home/fenics/shared/murtazo/cloudnaca# apt-get install gmsh
+———
+
+ - Find the path of the gmsh executable file 
+
+———
+root@dd785034c096:/home/fenics/shared/murtazo/cloudnaca# which gmsh
+/usr/bin/gmsh
+———
+
+- Fix the execution file path in the script “runme.sh”. Modify the following variable: 
+
+———
+GMSHBIN="/usr/bin/gmsh"
+———
+
+- Check if numpy is available or not, if not 
+
+———
+root@dd785034c096:apt install python-numpy
+———
+
+ - Run the script 
+———
+root@dd785034c096:/home/fenics/shared/murtazo/cloudnaca# ./runme.sh 0 30 10 200 3
+Files will be created in “msh” and “geo” directories
+
+root@dd785034c096:/home/fenics/shared/murtazo/cloudnaca/msh# ls
+r0a0n200.msh   r0a24n200.msh  r0a9n200.msh   r1a21n200.msh  r1a6n200.msh   r2a18n200.msh  r2a3n200.msh   r3a15n200.msh  r3a30n200.msh
+r0a12n200.msh  r0a27n200.msh  r1a0n200.msh   r1a24n200.msh  r1a9n200.msh   r2a21n200.msh  r2a6n200.msh   r3a18n200.msh  r3a3n200.msh
+r0a15n200.msh  r0a30n200.msh  r1a12n200.msh  r1a27n200.msh  r2a0n200.msh   r2a24n200.msh  r2a9n200.msh   r3a21n200.msh  r3a6n200.msh
+r0a18n200.msh  r0a3n200.msh   r1a15n200.msh  r1a30n200.msh  r2a12n200.msh  r2a27n200.msh  r3a0n200.msh   r3a24n200.msh  r3a9n200.msh
+r0a21n200.msh  r0a6n200.msh   r1a18n200.msh  r1a3n200.msh   r2a15n200.msh  r2a30n200.msh  r3a12n200.msh  r3a27n200.msh
+
+root@dd785034c096:/home/fenics/shared/murtazo/cloudnaca/geo# ls
+a0n200.geo  a12n200.geo  a15n200.geo  a18n200.geo  a21n200.geo  a24n200.geo  a27n200.geo  a30n200.geo  a3n200.geo  a6n200.geo  a9n200.geo
+———
+
+ - Now convert one msh file into xml file 
+
+———
+root@dd785034c096:/home/fenics/shared/murtazo/cloudnaca/msh# dolfin-convert r2a15n200.msh r2a15n200.xml
+
+Converting from Gmsh format (.msh, .gmsh) to DOLFIN XML format
+Expecting 97888 vertices
+Found all vertices
+Expecting 193920 cells
+Found all cells
+Conversion done
+———
+
+———
+root@dd785034c096:/home/fenics/shared/murtazo/cloudnaca/msh# ls r2a15n200*
+r2a15n200.msh  r2a15n200.xml
+———
+
+
+10 - Finally run the code with airfoil executable
+
+———
+root@dd785034c096:/home/fenics/shared/murtazo/navier_stokes_solver# ./airfoil  10 0.0001 10. 1 ../cloudnaca/msh/r2a15n200.xml
+l2(u) = 1.181590e+02, l2(p) = 1.584332e+07, k = 0.000959, t = 0.000959, iter_time = 3.850142 sec
+l2(u) = 2.397042e+03, l2(p) = 1.557532e+07, k = 0.000959, t = 0.001918, iter_time = 3.227917 sec
+l2(u) = 2.789109e+02, l2(p) = 1.770323e+05, k = 0.000959, t = 0.002876, iter_time = 3.219568 sec
+l2(u) = 2.139650e+02, l2(p) = 2.199652e+04, k = 0.000959, t = 0.003835, iter_time = 3.630989 sec
+l2(u) = 1.604655e+02, l2(p) = 1.156441e+04, k = 0.000959, t = 0.004794, iter_time = 3.634750 sec
+….
+….
+
+< will going to take some time >
+———
